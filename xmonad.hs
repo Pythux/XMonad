@@ -12,7 +12,7 @@ import qualified XMonad.StackSet         as W
 main :: IO ()
 main = xmonad $ defaultConfig {
     layoutHook = noBorders  $  layoutHook defaultConfig,
-    keys = myKeys
+    keys = myKeys <+> keys def
 }
 
 
@@ -28,6 +28,8 @@ topRow = [0x26,0xe9,0x22,0x27,0x28,0x2d,0xe8,0x5f,0xe7,0xe0]
 myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     -- close focused window
     [ ((modMask .|. shiftMask, xK_c     ), kill)
+    , ((modMask,               xK_p     ), spawn "exe=`dmenu_path | dmenu` && eval \"exec $exe\"")
+
     ]
     --
     -- mod-[1..9], Switch to workspace N
@@ -36,4 +38,4 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     ++
     [((m .|. modMask .|. shiftMask, k), windows $ f i)
         | (i, k) <- zip (XMonad.workspaces conf) topRow,
-          (f, m) <- [(W.greedyView, 0), (W.shift, shiftMask)]]
+          (f, m) <- [(W.greedyView, 0), (W.shift, controlMask)]]
