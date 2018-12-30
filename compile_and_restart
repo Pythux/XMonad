@@ -1,0 +1,4 @@
+#!/bin/sh
+# help: https://brianbuccola.com/how-to-install-xmonad-and-xmobar-via-stack/
+xmonad --recompile && xmonad --restart
+
