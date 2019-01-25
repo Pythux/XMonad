@@ -2,24 +2,26 @@
 import           XMonad
 -- import           XMonad.Config.Azerty
 import           XMonad.Config.Desktop
+import           XMonad.Hooks.ManageHelpers
+import           XMonad.Layout.Fullscreen
+-- import           XMonad.Hooks.EwmhDesktops -- another way to fullscreen
 import           XMonad.Layout.NoBorders
+import           XMonad.Layout.ResizableTile
 
-import qualified Data.Map                as M
-import qualified XMonad.StackSet         as W
 
--- baseConfig = desktopConfig
+import qualified Data.Map                    as M
+import qualified XMonad.StackSet             as W
 
 main :: IO ()
-main = xmonad $ defaultConfig {
-    layoutHook = noBorders  $  layoutHook defaultConfig,
+main = xmonad $ def {
+    handleEventHook = fullscreenEventHook,
+    manageHook = fullscreenManageHook,
+    layoutHook = noBorders . smartBorders $ myLayoutHook,
+    focusedBorderColor = "#0ca2ff",
     keys = myKeys <+> keys def
 }
-
-
--- Border colors for unfocused and focused windows, respectively.
---
-myNormalBorderColor  = "#dddddd"
-myFocusedBorderColor = "#ff0000"
+tall = ResizableTall 1 (1/10) (1/2) []
+myLayoutHook = tall
 
 -- it's the FR_AMP, FR_EACU, ... => KC_1, KC_2, ...
 -- FR_1 => LSFT(KC_1) => LSFT(FR_AMP)
@@ -29,7 +31,8 @@ myKeys conf@(XConfig {XMonad.modMask = modMask}) = M.fromList $
     -- close focused window
     [ ((modMask .|. shiftMask, xK_c     ), kill)
     , ((modMask,               xK_p     ), spawn "exe=`dmenu_path | dmenu` && eval \"exec $exe\"")
-
+    , ((modMask, xK_Left),  sendMessage MirrorExpand)
+    , ((modMask, xK_Right), sendMessage MirrorShrink)
     ]
     --
     -- mod-[1..9], Switch to workspace N
