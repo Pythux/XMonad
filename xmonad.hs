@@ -3,25 +3,32 @@ import           XMonad
 -- import           XMonad.Config.Azerty
 import           XMonad.Config.Desktop
 import           XMonad.Hooks.ManageHelpers
-import           XMonad.Layout.Fullscreen
+-- import           XMonad.Layout.Fullscreen
 -- import           XMonad.Hooks.EwmhDesktops -- another way to fullscreen
 import           XMonad.Layout.NoBorders
 import           XMonad.Layout.ResizableTile
+
+import XMonad.Hooks.ManageDocks(manageDocks,avoidStruts)
+import XMonad.Hooks.EwmhDesktops(fullscreenEventHook,ewmh)
+import XMonad.Hooks.ManageHelpers(doFullFloat,isFullscreen)
 
 
 import qualified Data.Map                    as M
 import qualified XMonad.StackSet             as W
 
 main :: IO ()
-main = xmonad $ def {
-    handleEventHook = fullscreenEventHook,
-    manageHook = fullscreenManageHook,
+main = xmonad $ ewmh $ def {
+    handleEventHook = myHandleEventHook,
+    manageHook = myManageHook,
     layoutHook = noBorders . smartBorders $ myLayoutHook,
     focusedBorderColor = "#0ca2ff",
     keys = myKeys <+> keys def
 }
 tall = ResizableTall 1 (1/10) (1/2) []
 myLayoutHook = tall
+
+myManageHook = manageDocks <+> manageHook desktopConfig <+> (isFullscreen --> doFullFloat)
+myHandleEventHook = handleEventHook desktopConfig <+> fullscreenEventHook
 
 -- it's the FR_AMP, FR_EACU, ... => KC_1, KC_2, ...
 -- FR_1 => LSFT(KC_1) => LSFT(FR_AMP)
